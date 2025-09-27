@@ -7,7 +7,6 @@ use DateTime;
 use GibsonOS\Core\Attribute\Install\Database\Column;
 use GibsonOS\Core\Attribute\Install\Database\Constraint;
 use GibsonOS\Core\Attribute\Install\Database\Table;
-use GibsonOS\Core\Dto\Fcm\Message;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Module\Marvin\Enum\Role;
 use GibsonOS\Module\Marvin\Model\Chat;
@@ -16,11 +15,11 @@ use GibsonOS\Module\Marvin\Model\Chat\Prompt\Response;
 use JsonSerializable;
 
 /**
- * @method Chat      getChat()
- * @method Prompt    setChat(Chat $chat)
- * @method Message[] getMessages()
- * @method Prompt    setMessages(Message[] $messages)
- * @method Prompt    addMessages(Message[] $messages)
+ * @method Chat       getChat()
+ * @method Prompt     setChat(Chat $chat)
+ * @method Response[] getResponses()
+ * @method Prompt     setResponses(Response[] $messages)
+ * @method Prompt     addResponses(Response[] $messages)
  */
 #[Table]
 class Prompt extends AbstractModel implements JsonSerializable
@@ -111,6 +110,10 @@ class Prompt extends AbstractModel implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return [];
+        return [
+            'id' => $this->getId(),
+            'prompt' => $this->getPrompt(),
+            'responses' => $this->getResponses(),
+        ];
     }
 }

@@ -78,7 +78,6 @@ class Chat extends AbstractModel implements JsonSerializable
         return [
             'id' => $this->getId(),
             'name' => $this->getName(),
-            'prompts' => $this->getPrompts(),
         ];
     }
 }

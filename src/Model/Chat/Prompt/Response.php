@@ -26,6 +26,9 @@ class Response extends AbstractModel implements JsonSerializable
     #[Column(type: Column::TYPE_TEXT)]
     private string $message = '';
 
+    #[Column]
+    private bool $done = false;
+
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]
     private int $promptId;
 
@@ -58,6 +61,18 @@ class Response extends AbstractModel implements JsonSerializable
     public function setMessage(string $message): Response
     {
         $this->message = $message;
+
+        return $this;
+    }
+
+    public function isDone(): bool
+    {
+        return $this->done;
+    }
+
+    public function setDone(bool $done): Response
+    {
+        $this->done = $done;
 
         return $this;
     }
