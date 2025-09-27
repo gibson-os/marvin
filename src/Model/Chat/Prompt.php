@@ -7,16 +7,20 @@ use DateTime;
 use GibsonOS\Core\Attribute\Install\Database\Column;
 use GibsonOS\Core\Attribute\Install\Database\Constraint;
 use GibsonOS\Core\Attribute\Install\Database\Table;
+use GibsonOS\Core\Dto\Fcm\Message;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Module\Marvin\Enum\Role;
 use GibsonOS\Module\Marvin\Model\Chat;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt\Image;
-use GibsonOS\Module\Marvin\Model\Chat\Prompt\Message;
+use GibsonOS\Module\Marvin\Model\Chat\Prompt\Response;
 use JsonSerializable;
 
 /**
- * @method Chat   getChat()
- * @method Prompt setChat(Chat $chat)
+ * @method Chat      getChat()
+ * @method Prompt    setChat(Chat $chat)
+ * @method Message[] getMessages()
+ * @method Prompt    setMessages(Message[] $messages)
+ * @method Prompt    addMessages(Message[] $messages)
  */
 #[Table]
 class Prompt extends AbstractModel implements JsonSerializable
@@ -24,7 +28,7 @@ class Prompt extends AbstractModel implements JsonSerializable
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED], autoIncrement: true)]
     private ?int $id = null;
 
-    #[Column]
+    #[Column(type: Column::TYPE_TEXT)]
     private string $prompt;
 
     #[Column]
@@ -42,8 +46,8 @@ class Prompt extends AbstractModel implements JsonSerializable
     #[Constraint('chat', Image::class)]
     protected array $images;
 
-    #[Constraint('chat', Message::class)]
-    protected Chat $messages;
+    #[Constraint('chat', Response::class)]
+    protected array $messages;
 
     public function getId(): ?int
     {

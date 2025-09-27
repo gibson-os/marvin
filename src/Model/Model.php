@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Marvin\Model;
 
 use GibsonOS\Core\Attribute\Install\Database\Column;
+use GibsonOS\Core\Attribute\Install\Database\Key;
 use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
 use JsonSerializable;
@@ -15,6 +16,7 @@ class Model extends AbstractModel implements JsonSerializable
     private ?int $id = null;
 
     #[Column(length: 64)]
+    #[Key(true)]
     private string $name;
 
     public function getId(): ?int

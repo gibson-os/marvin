@@ -8,47 +8,56 @@ use GibsonOS\Core\Attribute\Install\Database\Constraint;
 use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt;
+use GibsonOS\Module\Marvin\Model\Model;
 use JsonSerializable;
 
 /**
- * @method Prompt getPrompt()
- * @method Image  setPrompt(Prompt $prompt)
+ * @method Prompt   getPrompt()
+ * @method Response setPrompt(Prompt $prompt)
+ * @method Model    getModel()
+ * @method Response setModel(Model $model)
  */
 #[Table]
-class Image extends AbstractModel implements JsonSerializable
+class Response extends AbstractModel implements JsonSerializable
 {
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED], autoIncrement: true)]
     private ?int $id = null;
 
-    #[Column(length: 256)]
-    private string $path;
+    #[Column(type: Column::TYPE_TEXT)]
+    private string $message = '';
 
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]
     private int $promptId;
 
+    #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]
+    private int $modelId;
+
     #[Constraint]
     protected Prompt $prompt;
+
+    #[Constraint]
+    protected Model $model;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(?int $id): Image
+    public function setId(?int $id): Response
     {
         $this->id = $id;
 
         return $this;
     }
 
-    public function getPath(): string
+    public function getMessage(): string
     {
-        return $this->path;
+        return $this->message;
     }
 
-    public function setPath(string $path): Image
+    public function setMessage(string $message): Response
     {
-        $this->path = $path;
+        $this->message = $message;
 
         return $this;
     }
@@ -58,9 +67,21 @@ class Image extends AbstractModel implements JsonSerializable
         return $this->promptId;
     }
 
-    public function setPromptId(int $promptId): Image
+    public function setPromptId(int $promptId): Response
     {
         $this->promptId = $promptId;
+
+        return $this;
+    }
+
+    public function getModelId(): int
+    {
+        return $this->modelId;
+    }
+
+    public function setModelId(int $modelId): Response
+    {
+        $this->modelId = $modelId;
 
         return $this;
     }
