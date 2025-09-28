@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Marvin\Model\Chat\Prompt;
 
+use DateTime;
 use GibsonOS\Core\Attribute\Install\Database\Column;
 use GibsonOS\Core\Attribute\Install\Database\Constraint;
 use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
+use GibsonOS\Core\Service\ParsedownService;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt;
 use GibsonOS\Module\Marvin\Model\Model;
 use JsonSerializable;
@@ -27,7 +29,10 @@ class Response extends AbstractModel implements JsonSerializable
     private string $message = '';
 
     #[Column]
-    private bool $done = false;
+    private ?DateTime $startedAt = null;
+
+    #[Column]
+    private ?DateTime $doneAt = null;
 
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]
     private int $promptId;
@@ -65,14 +70,26 @@ class Response extends AbstractModel implements JsonSerializable
         return $this;
     }
 
-    public function isDone(): bool
+    public function getStartedAt(): ?DateTime
     {
-        return $this->done;
+        return $this->startedAt;
     }
 
-    public function setDone(bool $done): Response
+    public function setStartedAt(?DateTime $startedAt): Response
     {
-        $this->done = $done;
+        $this->startedAt = $startedAt;
+
+        return $this;
+    }
+
+    public function getDoneAt(): ?DateTime
+    {
+        return $this->doneAt;
+    }
+
+    public function setDoneAt(?DateTime $doneAt): Response
+    {
+        $this->doneAt = $doneAt;
 
         return $this;
     }
@@ -103,6 +120,14 @@ class Response extends AbstractModel implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return [];
+        $parsedown = new ParsedownService();
+
+        return [
+            'id' => $this->getId(),
+            'message' => $parsedown->parse($this->getMessage()),
+            'model' => $this->getModel(),
+            'started' => $this->getStartedAt()?->format('Y-m-d H:i:s'),
+            'done' => $this->getDoneAt()?->format('Y-m-d H:i:s'),
+        ];
     }
 }

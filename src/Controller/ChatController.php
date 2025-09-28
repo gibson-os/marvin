@@ -12,12 +12,13 @@ use GibsonOS\Core\Attribute\GetStore;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Enum\Permission;
 use GibsonOS\Core\Exception\Model\SaveError;
-use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Core\Model\User;
 use GibsonOS\Core\Service\Response\AjaxResponse;
+use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Marvin\Model\Chat;
 use GibsonOS\Module\Marvin\Model\Chat\Model;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt;
+use GibsonOS\Module\Marvin\Model\Chat\Prompt\Response;
 use GibsonOS\Module\Marvin\Store\Chat\PromptStore;
 use JsonException;
 use MDO\Client;
@@ -63,7 +64,7 @@ class ChatController extends AbstractController
     #[CheckPermission([Permission::WRITE])]
     public function postPrompt(
         User $permissionUser,
-        ModelManager $modelManager,
+        ModelWrapper $modelWrapper,
         Client $client,
         #[GetMappedModel(['id' => 'chatId'], ['id' => 'chatId'])]
         Chat $chat,
@@ -80,16 +81,20 @@ class ChatController extends AbstractController
             $prompt->setChat($chat);
         }
 
+        $modelManager = $modelWrapper->getModelManager();
+
         try {
             $modelManager->save($chat);
-        } catch (Exception $exception) {
-            $client->rollBack();
-
-            throw $exception;
-        }
-
-        try {
             $modelManager->saveWithoutChildren($prompt);
+
+            foreach ($chat->getModels() as $model) {
+                $response = (new Response($modelWrapper))
+                    ->setModel($model->getModel())
+                    ->setPrompt($prompt)
+                ;
+                $modelManager->saveWithoutChildren($response);
+            }
+
             $client->commit();
         } catch (Exception $exception) {
             $client->rollBack();

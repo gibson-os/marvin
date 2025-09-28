@@ -26,7 +26,7 @@ class ExecuteCommand extends AbstractCommand
     protected function run(): int
     {
         foreach ($this->modelStore->getList() as $model) {
-            $this->commandService->execute(
+            $this->commandService->executeAsync(
                 ProcessCommand::class,
                 [
                     'modelId' => (string) $model->getId(),

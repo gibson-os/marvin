@@ -7,13 +7,15 @@ use GibsonOS\Core\Attribute\Command\Argument;
 use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\Lock\LockException;
 use GibsonOS\Core\Exception\Lock\UnlockException;
+use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\Repository\SelectError;
+use GibsonOS\Core\Exception\ViolationException;
 use GibsonOS\Core\Exception\WebException;
+use GibsonOS\Core\Service\DateTimeService;
 use GibsonOS\Core\Service\LockService;
 use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Marvin\Client\ChatClient;
-use GibsonOS\Module\Marvin\Model\Chat\Prompt\Response;
-use GibsonOS\Module\Marvin\Repository\Chat\PromptRepository;
+use GibsonOS\Module\Marvin\Repository\Chat\Prompt\ResponseRepository;
 use GibsonOS\Module\Marvin\Repository\ModelRepository;
 use JsonException;
 use MDO\Exception\ClientException;
@@ -30,10 +32,11 @@ class ProcessCommand extends AbstractCommand
 
     public function __construct(
         private readonly ModelWrapper $modelWrapper,
-        private readonly PromptRepository $promptRepository,
+        private readonly ResponseRepository $responseRepository,
         private readonly ModelRepository $modelRepository,
         private readonly LockService $lockService,
         private readonly ChatClient $chatClient,
+        private readonly DateTimeService $dateTimeService,
         LoggerInterface $logger,
     ) {
         parent::__construct($logger);
@@ -45,9 +48,11 @@ class ProcessCommand extends AbstractCommand
      * @throws LockException
      * @throws RecordException
      * @throws ReflectionException
-     * @throws UnlockException
      * @throws SelectError
+     * @throws UnlockException
      * @throws WebException
+     * @throws SaveError
+     * @throws ViolationException
      */
     protected function run(): int
     {
@@ -60,13 +65,15 @@ class ProcessCommand extends AbstractCommand
         $this->lockService->lock($lockName);
         $model = $this->modelRepository->getById($this->modelId);
 
-        foreach ($this->promptRepository->getWithoutModel($model) as $prompt) {
-            $apiResponse = $this->chatClient->postChat($model, $prompt);
-            $response = (new Response($this->modelWrapper))
-                ->setModel($model)
-                ->setPrompt($prompt)
+        foreach ($this->responseRepository->getWithoutResponseForModel($model) as $response) {
+            $response
+                ->setStartedAt($this->dateTimeService->get())
+            ;
+            $this->modelWrapper->getModelManager()->saveWithoutChildren($response);
+            $apiResponse = $this->chatClient->postChat($model, $response->getPrompt());
+            $response
                 ->setMessage($apiResponse['message']['content'])
-                ->setDone(true)
+                ->setDoneAt($this->dateTimeService->get())
             ;
             $this->modelWrapper->getModelManager()->saveWithoutChildren($response);
         }

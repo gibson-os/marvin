@@ -144,6 +144,56 @@
             "time": "2025-08-20T19:15:30+00:00"
         },
         {
+            "name": "erusev/parsedown",
+            "version": "1.7.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/erusev/parsedown.git",
+                "reference": "cb17b6477dfff935958ba01325f2e8a2bfa6dab3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/cb17b6477dfff935958ba01325f2e8a2bfa6dab3",
+                "reference": "cb17b6477dfff935958ba01325f2e8a2bfa6dab3",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.35"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Parsedown": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Emanuil Rusev",
+                    "email": "hello@erusev.com",
+                    "homepage": "http://erusev.com"
+                }
+            ],
+            "description": "Parser for Markdown.",
+            "homepage": "http://parsedown.org",
+            "keywords": [
+                "markdown",
+                "parser"
+            ],
+            "support": {
+                "issues": "https://github.com/erusev/parsedown/issues",
+                "source": "https://github.com/erusev/parsedown/tree/1.7.x"
+            },
+            "time": "2019-12-30T22:54:17+00:00"
+        },
+        {
             "name": "firebase/php-jwt",
             "version": "v6.11.1",
             "source": {
@@ -208,19 +258,20 @@
         },
         {
             "name": "gibson-os/core",
-            "version": "v5.4.7",
+            "version": "v5.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gibson-os/core.git",
-                "reference": "ef0d10438018d6d36b155cac42a7601ac2d3a110"
+                "reference": "e60910143f890363893fc14849d49561499926f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gibson-os/core/zipball/ef0d10438018d6d36b155cac42a7601ac2d3a110",
-                "reference": "ef0d10438018d6d36b155cac42a7601ac2d3a110",
+                "url": "https://api.github.com/repos/gibson-os/core/zipball/e60910143f890363893fc14849d49561499926f3",
+                "reference": "e60910143f890363893fc14849d49561499926f3",
                 "shasum": ""
             },
             "require": {
+                "erusev/parsedown": "^1.7",
                 "ext-curl": "*",
                 "ext-exif": "*",
                 "ext-fileinfo": "*",
@@ -267,9 +318,9 @@
             "notification-url": "https://packagist.org/downloads/",
             "support": {
                 "issues": "https://github.com/gibson-os/core/issues",
-                "source": "https://github.com/gibson-os/core/tree/v5.4.7"
+                "source": "https://github.com/gibson-os/core/tree/v5.4.8"
             },
-            "time": "2025-09-28T02:30:29+00:00"
+            "time": "2025-09-28T13:22:04+00:00"
         },
         {
             "name": "gibson-os/mdo",
@@ -5495,16 +5546,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "10.5.57",
+            "version": "10.5.58",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "8e7598bbb17bb5cd80728f4831d3f83223d3a6b3"
+                "reference": "e24fb46da450d8e6a5788670513c1af1424f16ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/8e7598bbb17bb5cd80728f4831d3f83223d3a6b3",
-                "reference": "8e7598bbb17bb5cd80728f4831d3f83223d3a6b3",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/e24fb46da450d8e6a5788670513c1af1424f16ca",
+                "reference": "e24fb46da450d8e6a5788670513c1af1424f16ca",
                 "shasum": ""
             },
             "require": {
@@ -5576,7 +5627,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.57"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.58"
             },
             "funding": [
                 {
@@ -5600,7 +5651,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-09-24T06:30:38+00:00"
+            "time": "2025-09-28T12:04:46+00:00"
         },
         {
             "name": "psr/container",

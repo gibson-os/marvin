@@ -54,7 +54,7 @@ class ChatClient
 
             $messages[] = [
                 'role' => Role::ASSISTANT,
-                'content' => $modelResponse->getContent(),
+                'content' => $modelResponse->getMessage(),
             ];
         }
 
