@@ -1,7 +1,7 @@
 Ext.define('GibsonOS.module.marvin.store.chat.Prompt', {
     extend: 'GibsonOS.data.Store',
     alias: ['hcMarvinChatPromptStore'],
-    autoLoad: true,
+    autoLoad: false,
     pageSize: 100,
     proxy: {
         type: 'gosDataProxyAjax',

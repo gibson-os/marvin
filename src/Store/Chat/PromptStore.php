@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Marvin\Store\Chat;
 
-use GibsonOS\Core\Model\User;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
 use GibsonOS\Module\Marvin\Model\Chat;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt;
@@ -17,7 +16,7 @@ class PromptStore extends AbstractDatabaseStore
 
     protected function getModelClassName(): string
     {
-        return User::class;
+        return Prompt::class;
     }
 
     public function setChat(Chat $chat): PromptStore

@@ -9,7 +9,7 @@ Ext.define('GibsonOS.module.marvin.index.Panel', {
             xtype: 'gosModuleMarvinChatPanel',
             disabled: true,
             region: 'center'
-        },{
+        }, {
             xtype: 'gosModuleMarvinChatGrid',
             flex: 0,
             region: 'west',
@@ -26,7 +26,11 @@ Ext.define('GibsonOS.module.marvin.index.Panel', {
         const chatGrid = me.down('gosModuleMarvinChatGrid');
 
         chatGrid.on('selectionchange', (grid, selected) => {
-            chatPanel.setDisabled(selected.length === 0);
+            chatPanel.setDisabled(selected.length !== 1);
+
+            if (selected.length === 1) {
+                chatPanel.setChatId(selected[0].getId());
+            }
         });
         chatGrid.getStore().on('load', () => {
             chatGrid.addFunction();

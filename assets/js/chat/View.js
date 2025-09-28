@@ -11,6 +11,24 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
 
         me.tpl = new Ext.XTemplate(
             '<tpl for=".">',
+            '<div class="marvinChatSendMessageContainer">',
+            '<div class="marvinChatMessageArrow">',
+            '</div>',
+            '<div class="marvinChatMessage">',
+            '{prompt}',
+            '<div class="marvinChatMessageStatus"></div>',
+            '</div>',
+            '</div>',
+            '<div class="marvinChatReceivedMessageContainer">',
+            '<div class="marvinChatMessageArrow">',
+            '</div>',
+            '<div class="marvinChatMessage">',
+            '<tpl for="responses">',
+            '{message}',
+            '</tpl>',
+            '<div class="marvinChatMessageStatus"></div>',
+            '</div>',
+            '</div>',
             '</tpl>'
         );
 

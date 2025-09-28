@@ -8,6 +8,7 @@ use GibsonOS\Core\Attribute\Install\Database\Column;
 use GibsonOS\Core\Attribute\Install\Database\Constraint;
 use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
+use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Marvin\Enum\Role;
 use GibsonOS\Module\Marvin\Model\Chat;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt\Image;
@@ -20,6 +21,9 @@ use JsonSerializable;
  * @method Response[] getResponses()
  * @method Prompt     setResponses(Response[] $messages)
  * @method Prompt     addResponses(Response[] $messages)
+ * @method Image[]    getImages()
+ * @method Prompt     setImages(Image[] $messages)
+ * @method Prompt     addImages(Image[] $messages)
  */
 #[Table]
 class Prompt extends AbstractModel implements JsonSerializable
@@ -34,7 +38,7 @@ class Prompt extends AbstractModel implements JsonSerializable
     private DateTime $createdAt;
 
     #[Column]
-    private Role $role;
+    private Role $role = Role::USER;
 
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]
     private int $chatId;
@@ -42,11 +46,18 @@ class Prompt extends AbstractModel implements JsonSerializable
     #[Constraint]
     protected Chat $chat;
 
-    #[Constraint('chat', Image::class)]
+    #[Constraint('prompt', Image::class)]
     protected array $images;
 
-    #[Constraint('chat', Response::class)]
-    protected array $messages;
+    #[Constraint('prompt', Response::class)]
+    protected array $responses;
+
+    public function __construct(ModelWrapper $modelWrapper)
+    {
+        parent::__construct($modelWrapper);
+
+        $this->setCreatedAt(new DateTime());
+    }
 
     public function getId(): ?int
     {

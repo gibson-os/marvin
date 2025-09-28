@@ -1,0 +1,28 @@
+.marvinChatSendMessageContainer,
+.marvinChatReceivedMessageContainer {
+    min-width: 100px;
+    max-width: 90%;
+    margin: 8px auto;
+}
+
+.marvinChatSendMessageContainer {
+    margin-right: 0;
+}
+
+.marvinChatReceivedMessageContainer {
+    margin-left: 0;
+}
+
+.marvinChatMessage {
+    border-radius: 5px;
+    padding: 8px;
+    white-space: nowrap;
+}
+
+.marvinChatSendMessageContainer .marvinChatMessage {
+    background: #d8fdd2;
+}
+
+.marvinChatReceivedMessageContainer .marvinChatMessage {
+    background: #FFF;
+}

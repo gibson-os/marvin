@@ -30,7 +30,7 @@ class ModelClient
     public function getModels(): Generator
     {
         $response = $this->webService->request(
-            (new Request(sprintf('%s/%s', $this->apiUrl, 'api/tags')))
+            (new Request(sprintf('%s%s', $this->apiUrl, 'api/tags')))
                 ->setPort($this->apiPort)
                 ->setMethod(HttpMethod::GET),
         );

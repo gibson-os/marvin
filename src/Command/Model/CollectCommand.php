@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace GibsonOS\Module\Marvin\Command;
+namespace GibsonOS\Module\Marvin\Command\Model;
 
 use GibsonOS\Core\Attribute\Install\Cronjob;
 use GibsonOS\Core\Command\AbstractCommand;
@@ -13,7 +13,7 @@ use Psr\Log\LoggerInterface;
  * @description Collect all possible KI models from Ollama
  */
 #[Cronjob('12', '42', '0')]
-class CollectModelsCommand extends AbstractCommand
+class CollectCommand extends AbstractCommand
 {
     public function __construct(
         private readonly ModelClient $client,

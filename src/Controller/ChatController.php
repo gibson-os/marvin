@@ -3,17 +3,44 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Marvin\Controller;
 
+use DateTimeImmutable;
+use Exception;
 use GibsonOS\Core\Attribute\CheckPermission;
+use GibsonOS\Core\Attribute\GetMappedModel;
 use GibsonOS\Core\Attribute\GetModel;
 use GibsonOS\Core\Attribute\GetStore;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Enum\Permission;
+use GibsonOS\Core\Exception\Model\SaveError;
+use GibsonOS\Core\Manager\ModelManager;
+use GibsonOS\Core\Model\User;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Module\Marvin\Model\Chat;
+use GibsonOS\Module\Marvin\Model\Chat\Model;
+use GibsonOS\Module\Marvin\Model\Chat\Prompt;
 use GibsonOS\Module\Marvin\Store\Chat\PromptStore;
+use JsonException;
+use MDO\Client;
+use MDO\Exception\ClientException;
+use MDO\Exception\RecordException;
+use ReflectionException;
 
 class ChatController extends AbstractController
 {
+    #[CheckPermission([Permission::READ])]
+    public function get(
+        #[GetModel]
+        Chat $chat,
+    ): AjaxResponse {
+        $data = $chat->jsonSerialize();
+        $data['models'] = array_map(
+            static fn (Model $model): array => $model->getModel()->jsonSerialize(),
+            $chat->getModels(),
+        );
+
+        return $this->returnSuccess($data);
+    }
+
     #[CheckPermission([Permission::READ])]
     public function getPrompts(
         #[GetModel]
@@ -24,5 +51,52 @@ class ChatController extends AbstractController
         $promptStore->setChat($chat);
 
         return $promptStore->getAjaxResponse();
+    }
+
+    /**
+     * @throws SaveError
+     * @throws JsonException
+     * @throws RecordException
+     * @throws ReflectionException
+     * @throws ClientException
+     */
+    #[CheckPermission([Permission::WRITE])]
+    public function postPrompt(
+        User $permissionUser,
+        ModelManager $modelManager,
+        Client $client,
+        #[GetMappedModel(['id' => 'chatId'], ['id' => 'chatId'])]
+        Chat $chat,
+        #[GetMappedModel]
+        Prompt $prompt,
+    ): AjaxResponse {
+        $client->startTransaction();
+
+        if ($chat->getId() === 0) {
+            $chat
+                ->setUser($permissionUser)
+                ->setName(sprintf('Chat vom %s', (new DateTimeImmutable())->format('d-m-Y H:i:s')))
+            ;
+            $prompt->setChat($chat);
+        }
+
+        try {
+            $modelManager->save($chat);
+        } catch (Exception $exception) {
+            $client->rollBack();
+
+            throw $exception;
+        }
+
+        try {
+            $modelManager->saveWithoutChildren($prompt);
+            $client->commit();
+        } catch (Exception $exception) {
+            $client->rollBack();
+
+            throw $exception;
+        }
+
+        return $this->returnSuccess($chat);
     }
 }
