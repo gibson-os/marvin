@@ -24,4 +24,17 @@ class ModelRepository extends AbstractRepository
     {
         return $this->fetchOne('`id`=:id', ['id' => $id], Model::class);
     }
+
+    /**
+     * @throws ClientException
+     * @throws JsonException
+     * @throws RecordException
+     * @throws ReflectionException
+     *
+     * @return Model[]
+     */
+    public function findByName(string $name): array
+    {
+        return $this->fetchAll('`name` LIKE ?', [$name . '%'], Model::class);
+    }
 }
