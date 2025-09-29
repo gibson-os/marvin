@@ -23,6 +23,13 @@ Ext.define('GibsonOS.module.marvin.chat.Panel', {
         }];
 
         me.callParent();
+
+        me.down('gosModuleMarvinChatForm').getForm().on('actioncomplete', (form, action) => {
+            const store = me.down('gosModuleMarvinChatView').getStore();
+
+            store.getProxy().setExtraParam('id', Ext.decode(action.response.responseText).data.id);
+            store.reload();
+        });
     },
     setChatId(chatId) {
         const me = this;
@@ -32,8 +39,6 @@ Ext.define('GibsonOS.module.marvin.chat.Panel', {
         const chatViewStore = me.down('gosModuleMarvinChatView').getStore();
 
         const waitModelLoading = () => {
-            console.log('gosModuleMarvinAiModelGrid.waitModelLoading');
-            console.log(modelGridStore.isLoading());
             if (modelGridStore.isLoading()) {
                 setTimeout(waitModelLoading, 25);
             }
@@ -65,10 +70,14 @@ Ext.define('GibsonOS.module.marvin.chat.Panel', {
             },
             success(response) {
                 const data = Ext.decode(response.responseText).data;
+                const selectedModels = [];
 
                 waitModelLoading();
                 data.models.forEach((model) => {
+                    selectedModels.push(modelGridStore.getById(model.id));
                 });
+
+                modelGridSelectionModel.select(selectedModels);
             },
             callback() {
                 me.setLoading(false);

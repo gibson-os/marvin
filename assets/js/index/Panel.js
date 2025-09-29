@@ -35,5 +35,13 @@ Ext.define('GibsonOS.module.marvin.index.Panel', {
         chatGrid.getStore().on('load', () => {
             chatGrid.addFunction();
         });
+
+        me.down('gosModuleMarvinChatForm').getForm().on('actioncomplete', (form, action) => {
+            const selected = chatGrid.getSelectionModel().getSelection()[0];
+            const data = Ext.decode(action.response.responseText).data;
+
+            selected.set('id', data.id);
+            selected.set('name', data.name);
+        });
     }
 });

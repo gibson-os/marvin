@@ -2,6 +2,7 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
     extend: 'GibsonOS.module.core.component.view.View',
     alias: ['widget.gosModuleMarvinChatView'],
     overflowY: 'auto',
+    loadMask: false,
     chatId: null,
     initComponent() {
         let me = this;
@@ -15,6 +16,23 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
         me.on('refresh', () => {
             me.setClickEvents();
         });
+        me.getStore().on('load', (store, records) => {
+            Ext.iterate(records, (record) => {
+                Ext.iterate(record.get('responses'), (response) => {
+                    if (response.done !== null) {
+                        return true;
+                    }
+
+                    setTimeout(
+                        () => {
+                            store.reload();
+                        },
+                        1000,
+                    );
+                    return false;
+                });
+            });
+        })
 
         me.tpl = new Ext.XTemplate(
             '<tpl for=".">',
