@@ -18,7 +18,7 @@ use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Marvin\Model\Chat;
 use GibsonOS\Module\Marvin\Model\Chat\Model;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt;
-use GibsonOS\Module\Marvin\Model\Chat\Prompt\Response;
+use GibsonOS\Module\Marvin\Service\ChatService;
 use GibsonOS\Module\Marvin\Store\Chat\PromptStore;
 use JsonException;
 use MDO\Client;
@@ -65,6 +65,7 @@ class ChatController extends AbstractController
     public function postPrompt(
         User $permissionUser,
         ModelWrapper $modelWrapper,
+        ChatService $chatService,
         Client $client,
         #[GetMappedModel(['id' => 'chatId'], ['id' => 'chatId'])]
         Chat $chat,
@@ -85,16 +86,8 @@ class ChatController extends AbstractController
 
         try {
             $modelManager->save($chat);
-            $modelManager->saveWithoutChildren($prompt);
-
-            foreach ($chat->getModels() as $model) {
-                $response = (new Response($modelWrapper))
-                    ->setModel($model->getModel())
-                    ->setPrompt($prompt)
-                ;
-                $modelManager->saveWithoutChildren($response);
-            }
-
+            $chatService->addPromptResponses($chat, $prompt);
+            $modelManager->save($prompt);
             $client->commit();
         } catch (Exception $exception) {
             $client->rollBack();

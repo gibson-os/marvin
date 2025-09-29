@@ -25,7 +25,7 @@ class Response extends AbstractModel implements JsonSerializable
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED], autoIncrement: true)]
     private ?int $id = null;
 
-    #[Column(type: Column::TYPE_TEXT)]
+    #[Column(type: Column::TYPE_TEXT, collate: 'utf8mb4_unicode_ci', charset: 'utf8mb4')]
     private string $message = '';
 
     #[Column]
