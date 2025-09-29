@@ -20,6 +20,9 @@ class Model extends AbstractModel implements JsonSerializable, AutoCompleteModel
     #[Key(true)]
     private string $name;
 
+    #[Column]
+    private bool $active = true;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -40,6 +43,18 @@ class Model extends AbstractModel implements JsonSerializable, AutoCompleteModel
     public function setName(string $name): Model
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): Model
+    {
+        $this->active = $active;
 
         return $this;
     }

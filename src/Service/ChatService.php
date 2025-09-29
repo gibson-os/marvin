@@ -15,6 +15,11 @@ class ChatService
     {
     }
 
+    public function addPrompt(Chat $chat, Prompt $prompt): Chat
+    {
+        return $chat->addPrompts([$this->addPromptResponses($chat, $prompt)]);
+    }
+
     public function addPromptResponses(Chat $chat, Prompt $prompt): Prompt
     {
         if ($prompt->getRole() !== Role::USER) {

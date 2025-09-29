@@ -35,6 +35,18 @@ class ModelRepository extends AbstractRepository
      */
     public function findByName(string $name): array
     {
-        return $this->fetchAll('`name` LIKE ?', [$name . '%'], Model::class);
+        return $this->fetchAll(
+            '`active`=:active `name` LIKE :name',
+            [
+                'active' => 1,
+                'name' => $name . '%',
+            ],
+            Model::class,
+        );
+    }
+
+    public function getAll(): array
+    {
+        return $this->fetchAll('', [], Model::class);
     }
 }
