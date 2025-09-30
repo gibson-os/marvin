@@ -30,11 +30,14 @@ class Chat extends AbstractModel implements JsonSerializable
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED], autoIncrement: true)]
     private ?int $id = null;
 
-    #[Column(length: 64)]
+    #[Column(type: Column::TYPE_TEXT, collate: 'utf8mb4_unicode_ci', charset: 'utf8mb4', length: 64)]
     private string $name;
 
     #[Column]
     private DateTime $createdAt;
+
+    #[Column]
+    private bool $temporaryName = true;
 
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]
     private ?int $userId = null;
@@ -91,6 +94,18 @@ class Chat extends AbstractModel implements JsonSerializable
         return $this;
     }
 
+    public function isTemporaryName(): bool
+    {
+        return $this->temporaryName;
+    }
+
+    public function setTemporaryName(bool $temporaryName): Chat
+    {
+        $this->temporaryName = $temporaryName;
+
+        return $this;
+    }
+
     public function getUserId(): ?int
     {
         return $this->userId;
@@ -108,6 +123,8 @@ class Chat extends AbstractModel implements JsonSerializable
         return [
             'id' => $this->getId(),
             'name' => $this->getName(),
+            'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
+            'temporaryName' => $this->isTemporaryName(),
         ];
     }
 }

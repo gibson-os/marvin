@@ -47,11 +47,11 @@ class ExecuteCommand extends AbstractCommand
      */
     protected function run(): int
     {
-        foreach ($this->promptRepository->getWithoutResponseForModel() as $prompt) {
+        foreach ($this->promptRepository->getWithoutResponse() as $prompt) {
             foreach ($prompt->getResponses() as $response) {
                 $response->setStartedAt($this->dateTimeService->get());
                 $this->modelWrapper->getModelManager()->saveWithoutChildren($response);
-                $apiResponse = $this->chatClient->postChat($response->getModel(), $prompt);
+                $apiResponse = $this->chatClient->postChatPrompt($response->getModel(), $prompt);
                 $response
                     ->setMessage($apiResponse['message']['content'])
                     ->setDoneAt($this->dateTimeService->get())

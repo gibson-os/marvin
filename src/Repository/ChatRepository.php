@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace GibsonOS\Module\Marvin\Repository\Chat;
+namespace GibsonOS\Module\Marvin\Repository;
 
 use GibsonOS\Core\Dto\Model\ChildrenMapping;
 use GibsonOS\Core\Repository\AbstractRepository;
-use GibsonOS\Module\Marvin\Model\Chat\Prompt;
+use GibsonOS\Module\Marvin\Model\Chat;
 use JsonException;
 use MDO\Enum\OrderDirection;
 use MDO\Exception\ClientException;
 use MDO\Exception\RecordException;
 use ReflectionException;
 
-class PromptRepository extends AbstractRepository
+class ChatRepository extends AbstractRepository
 {
     /**
      * @throws JsonException
@@ -20,19 +20,17 @@ class PromptRepository extends AbstractRepository
      * @throws RecordException
      * @throws ReflectionException
      *
-     * @return Prompt[]
+     * @return Chat[]
      */
-    public function getWithoutResponse(): array
+    public function getAllWithTemporaryName(): array
     {
         return $this->fetchAll(
-            '`r`.`started_at` IS NULL',
-            [],
-            Prompt::class,
-            orderBy: ['`t`.`created_at`' => OrderDirection::ASC],
+            '`temporary_name`=?',
+            [1],
+            Chat::class,
+            orderBy: ['`p`.`created_at`' => OrderDirection::ASC],
             children: [
-                new ChildrenMapping('responses', 'r_', 'r', [
-                    new ChildrenMapping('model', 'm_', 'm'),
-                ]),
+                new ChildrenMapping('prompts', 'p_', 'p'),
             ],
         );
     }

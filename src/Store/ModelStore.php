@@ -18,6 +18,6 @@ class ModelStore extends AbstractDatabaseStore
 
     protected function setWheres(): void
     {
-        $this->addWhere('`m`.`active`=:active', ['active' => 1]);
+        $this->addWhere('`active`=:active', ['active' => 1]);
     }
 }

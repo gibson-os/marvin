@@ -3,21 +3,22 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Marvin\Service;
 
+use GibsonOS\Core\Exception\WebException;
 use GibsonOS\Core\Wrapper\ModelWrapper;
+use GibsonOS\Module\Marvin\Client\ChatClient;
 use GibsonOS\Module\Marvin\Enum\Role;
+use GibsonOS\Module\Marvin\Exception\ChatException;
 use GibsonOS\Module\Marvin\Model\Chat;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt\Response;
 
 class ChatService
 {
-    public function __construct(private readonly ModelWrapper $modelWrapper)
-    {
-    }
-
-    public function addPrompt(Chat $chat, Prompt $prompt): Chat
-    {
-        return $chat->addPrompts([$this->addPromptResponses($chat, $prompt)]);
+    public function __construct(
+        private readonly ModelWrapper $modelWrapper,
+        private readonly ModelService $modelService,
+        private readonly ChatClient $chatClient,
+    ) {
     }
 
     public function addPromptResponses(Chat $chat, Prompt $prompt): Prompt
@@ -34,5 +35,35 @@ class ChatService
         }
 
         return $prompt;
+    }
+
+    /**
+     * @throws ChatException
+     * @throws WebException
+     */
+    public function generateChatName(Prompt $prompt): string
+    {
+        $namePrompt = (new Prompt($this->modelWrapper))
+            ->setPrompt($prompt->getPrompt())
+            ->setRole(Role::USER)
+        ;
+
+        $systemModel = $this->modelService->getSystemModel();
+
+        if ($systemModel === null) {
+            throw new ChatException('No system model found');
+        }
+
+        $apiResponse = $this->chatClient->postPrompts(
+            $systemModel,
+            [
+                (new Prompt($this->modelWrapper))
+                    ->setPrompt('Du bist ein KI-Assistent, der die nächste Message liest und eine sachliche Zusammenfassung mit maximal 50 Zeichen daraus erstellt. Beantworte dabei keine Fragen die eventuell in der Message vorhanden sind. Deine Ausgabe soll nichts weiter als die generierte Zusammenfassung beinhalten. Dabei sollst du Emojis gefolgt von einem Leerzeichen am Anfang benutzen.')
+                    ->setRole(Role::SYSTEM),
+                $namePrompt,
+            ],
+        );
+
+        return $apiResponse['message']['content'];
     }
 }

@@ -27,9 +27,42 @@ class ChatClient
     }
 
     /**
+     * @param Prompt[] $prompts
+     *
      * @throws WebException
      */
-    public function postChat(Model $model, Prompt $prompt): array
+    public function postPrompts(Model $model, array $prompts): array
+    {
+        $messages = [];
+
+        foreach ($prompts as $prompt) {
+            $messages[] = [
+                'role' => $prompt->getRole()->value,
+                'content' => $prompt->getPrompt(),
+            ];
+
+            $modelResponse = array_find(
+                $prompt->getResponses(),
+                fn (Response $response): bool => $response->getModelId() === $model->getId(),
+            );
+
+            if ($modelResponse === null) {
+                continue;
+            }
+
+            $messages[] = [
+                'role' => Role::ASSISTANT,
+                'content' => $modelResponse->getMessage(),
+            ];
+        }
+
+        return $this->postMessages($model, $messages);
+    }
+
+    /**
+     * @throws WebException
+     */
+    public function postChatPrompt(Model $model, Prompt $prompt): array
     {
         $messages = [];
 
@@ -58,6 +91,16 @@ class ChatClient
             ];
         }
 
+        return $this->postMessages($model, $messages);
+    }
+
+    /**
+     * @throws WebException
+     *
+     * @return mixed
+     */
+    private function postMessages(Model $model, array $messages): array
+    {
         $body = JsonUtility::encode([
             'model' => $model->getName(),
             'messages' => $messages,

@@ -74,17 +74,17 @@ class ChatController extends AbstractController
     ): AjaxResponse {
         $client->startTransaction();
 
-        if ($chat->getId() === 0) {
-            $chat
-                ->setUser($permissionUser)
-                ->setName(sprintf('Chat vom %s', (new DateTimeImmutable())->format('d-m-Y H:i:s')))
-            ;
-            $prompt->setChat($chat);
-        }
-
-        $modelManager = $modelWrapper->getModelManager();
-
         try {
+            if ($chat->getId() === 0) {
+                $chat
+                    ->setUser($permissionUser)
+                    ->setName(sprintf('Chat vom %s', (new DateTimeImmutable())->format('d-m-Y H:i:s')))
+                ;
+                $prompt->setChat($chat);
+            }
+
+            $modelManager = $modelWrapper->getModelManager();
+
             $modelManager->save($chat);
             $chatService->addPromptResponses($chat, $prompt);
             $modelManager->save($prompt);

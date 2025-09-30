@@ -36,7 +36,7 @@ class ModelRepository extends AbstractRepository
     public function findByName(string $name): array
     {
         return $this->fetchAll(
-            '`active`=:active `name` LIKE :name',
+            '`active`=:active AND `name` LIKE :name',
             [
                 'active' => 1,
                 'name' => $name . '%',
