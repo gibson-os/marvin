@@ -36,52 +36,64 @@ Ext.define('GibsonOS.module.marvin.chat.Panel', {
         const modelGrid = me.down('gosModuleMarvinAiModelGrid');
         const modelGridStore = me.down('gosModuleMarvinAiModelGrid').getStore();
         const modelGridSelectionModel = modelGrid.getSelectionModel();
-        const chatViewStore = me.down('gosModuleMarvinChatView').getStore();
+        const chatView = me.down('gosModuleMarvinChatView');
+        const chatViewStore = chatView.getStore();
 
-        const waitModelLoading = () => {
-            if (modelGridStore.isLoading()) {
-                setTimeout(waitModelLoading, 25);
+        const waitLoading = (store, callback) => {
+            if (!store.isLoading()) {
+                callback();
+
+                return;
             }
+
+            setTimeout(() => {
+                waitLoading(store, callback);
+            }, 25);
         }
 
         me.setLoading(true);
         me.chatId = chatId
 
         me.down('gosModuleMarvinChatForm').getForm().findField('chatId').setValue(chatId ?? 0);
-        chatViewStore.getProxy().setExtraParam('id', chatId);
-        chatViewStore.removeAll();
+        chatView.deactivateAutoReload();
+        waitLoading(chatViewStore, () => {
+            chatViewStore.getProxy().setExtraParam('id', chatId);
+            chatViewStore.removeAll();
 
-        if (chatId === null) {
-            waitModelLoading();
-            modelGridSelectionModel.selectAll();
-            me.setLoading(false);
-
-            return;
-        }
-
-        modelGridSelectionModel.deselectAll();
-        chatViewStore.load();
-
-        GibsonOS.Ajax.request({
-            url: baseDir + 'marvin/chat',
-            method: 'GET',
-            params: {
-                id: chatId
-            },
-            success(response) {
-                const data = Ext.decode(response.responseText).data;
-                const selectedModels = [];
-
-                waitModelLoading();
-                data.models.forEach((model) => {
-                    selectedModels.push(modelGridStore.getById(model.id));
+            if (chatId === null) {
+                waitLoading(modelGridStore, () => {
+                    modelGridSelectionModel.selectAll();
+                    me.setLoading(false);
                 });
 
-                modelGridSelectionModel.select(selectedModels);
-            },
-            callback() {
-                me.setLoading(false);
+                return;
             }
-        })
+
+            modelGridSelectionModel.deselectAll();
+            chatViewStore.load();
+
+            GibsonOS.Ajax.request({
+                url: baseDir + 'marvin/chat',
+                method: 'GET',
+                params: {
+                    id: chatId
+                },
+                success(response) {
+                    const data = Ext.decode(response.responseText).data;
+                    const selectedModels = [];
+
+                    waitLoading(modelGridStore, () => {
+                        data.models.forEach((model) => {
+                            selectedModels.push(modelGridStore.getById(model.id));
+                        });
+
+                        modelGridSelectionModel.select(selectedModels);
+                    });
+                },
+                callback() {
+                    me.setLoading(false);
+                }
+            });
+        });
     }
 });

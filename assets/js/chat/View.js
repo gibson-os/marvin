@@ -4,6 +4,7 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
     overflowY: 'auto',
     loadMask: false,
     chatId: null,
+    autoReload: true,
     initComponent() {
         let me = this;
 
@@ -16,19 +17,18 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
         me.on('refresh', () => {
             me.setClickEvents();
         });
+
         me.getStore().on('load', (store, records) => {
+            me.deactivateAutoReload();
+            
             Ext.iterate(records, (record) => {
                 Ext.iterate(record.get('responses'), (response) => {
                     if (response.done !== null) {
                         return true;
                     }
 
-                    setTimeout(
-                        () => {
-                            store.reload();
-                        },
-                        1000,
-                    );
+                    me.activateAutoReload();
+
                     return false;
                 });
             });
