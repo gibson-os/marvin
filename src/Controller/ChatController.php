@@ -86,6 +86,7 @@ class ChatController extends AbstractController
             $modelManager = $modelWrapper->getModelManager();
 
             $modelManager->save($chat);
+            $chatService->addMissingPrompts($chat);
             $chatService->addPromptResponses($chat, $prompt);
             $modelManager->save($prompt);
             $client->commit();

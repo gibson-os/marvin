@@ -11,6 +11,7 @@ use GibsonOS\Module\Marvin\Exception\ChatException;
 use GibsonOS\Module\Marvin\Model\Chat;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt\Response;
+use GibsonOS\Module\Marvin\Repository\Chat\PromptRepository;
 
 class ChatService
 {
@@ -18,6 +19,7 @@ class ChatService
         private readonly ModelWrapper $modelWrapper,
         private readonly ModelService $modelService,
         private readonly ChatClient $chatClient,
+        private readonly PromptRepository $promptRepository,
     ) {
     }
 
@@ -35,6 +37,21 @@ class ChatService
         }
 
         return $prompt;
+    }
+
+    public function addMissingPrompts(Chat $chat): void
+    {
+        foreach ($chat->getModels() as $chatModel) {
+            $model = $chatModel->getModel();
+
+            foreach ($this->promptRepository->getWithMissingResponse($chat, $model) as $prompt) {
+                $response = (new Response($this->modelWrapper))
+                    ->setPrompt($prompt)
+                    ->setModel($model)
+                ;
+                $this->modelWrapper->getModelManager()->saveWithoutChildren($response);
+            }
+        }
     }
 
     /**
