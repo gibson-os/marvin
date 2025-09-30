@@ -82,7 +82,11 @@ class ChatClient
             );
 
             if ($modelResponse === null) {
-                break;
+                if ($oldPrompt->getRole() === Role::USER) {
+                    break;
+                }
+
+                continue;
             }
 
             $messages[] = [
