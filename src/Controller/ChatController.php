@@ -130,6 +130,7 @@ class ChatController extends AbstractController
 
         return (new FileResponse($this->requestService, $filePath))
             ->setType(mime_content_type($filePath))
+            ->setDisposition('inline')
         ;
     }
 }
