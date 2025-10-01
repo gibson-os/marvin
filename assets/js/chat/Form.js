@@ -85,6 +85,9 @@ Ext.define('GibsonOS.module.marvin.chat.Form', {
                     }
 
                     me.setLoading(false);
+                    me.fireEvent('promptSend', {
+                        responseData: data
+                    });
                 };
 
                 xhr.send(formData);

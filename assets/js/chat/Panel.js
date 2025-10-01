@@ -24,10 +24,10 @@ Ext.define('GibsonOS.module.marvin.chat.Panel', {
 
         me.callParent();
 
-        me.down('gosModuleMarvinChatForm').getForm().on('actioncomplete', (form, action) => {
+        me.down('gosModuleMarvinChatForm').on('promptSend', (data) => {
             const store = me.down('gosModuleMarvinChatView').getStore();
 
-            store.getProxy().setExtraParam('id', Ext.decode(action.response.responseText).data.id);
+            store.getProxy().setExtraParam('id', data.id);
             store.reload();
         });
     },
