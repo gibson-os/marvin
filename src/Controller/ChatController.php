@@ -8,16 +8,20 @@ use Exception;
 use GibsonOS\Core\Attribute\CheckPermission;
 use GibsonOS\Core\Attribute\GetMappedModel;
 use GibsonOS\Core\Attribute\GetModel;
+use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Attribute\GetStore;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Enum\Permission;
 use GibsonOS\Core\Exception\Model\SaveError;
+use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User;
+use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Marvin\Model\Chat;
 use GibsonOS\Module\Marvin\Model\Chat\Model;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt;
+use GibsonOS\Module\Marvin\Model\Chat\Prompt\Image;
 use GibsonOS\Module\Marvin\Service\ChatService;
 use GibsonOS\Module\Marvin\Store\Chat\PromptStore;
 use JsonException;
@@ -66,11 +70,15 @@ class ChatController extends AbstractController
         User $permissionUser,
         ModelWrapper $modelWrapper,
         ChatService $chatService,
+        FileService $fileService,
         Client $client,
+        #[GetSetting('filePath', 'marvin')]
+        Setting $filePath,
         #[GetMappedModel(['id' => 'chatId'], ['id' => 'chatId'])]
         Chat $chat,
         #[GetMappedModel]
         Prompt $prompt,
+        array $files = [],
     ): AjaxResponse {
         $client->startTransaction();
 
@@ -87,6 +95,13 @@ class ChatController extends AbstractController
 
             $modelManager->save($chat);
             $chatService->addMissingPrompts($chat);
+
+            foreach ($files as $file) {
+                $filename = sprintf('%s%s', $filePath->getValue(), uniqid());
+                $prompt->addImages([(new Image($modelWrapper))->setPath($filename)]);
+                $fileService->move($file['tmp_name'], $filename);
+            }
+
             $chatService->addPromptResponses($chat, $prompt);
             $modelManager->save($prompt);
             $client->commit();

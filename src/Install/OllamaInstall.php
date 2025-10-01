@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace GibsonOS\Marvin\Install;
+namespace GibsonOS\Module\Marvin\Install;
 
 use Generator;
 use GibsonOS\Core\Dto\Install\Configuration;

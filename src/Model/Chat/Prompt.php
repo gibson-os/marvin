@@ -22,8 +22,8 @@ use JsonSerializable;
  * @method Prompt     setResponses(Response[] $messages)
  * @method Prompt     addResponses(Response[] $messages)
  * @method Image[]    getImages()
- * @method Prompt     setImages(Image[] $messages)
- * @method Prompt     addImages(Image[] $messages)
+ * @method Prompt     setImages(Image[] $images)
+ * @method Prompt     addImages(Image[] $images)
  */
 #[Table]
 class Prompt extends AbstractModel implements JsonSerializable

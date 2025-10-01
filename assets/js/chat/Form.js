@@ -16,10 +16,16 @@ Ext.define('GibsonOS.module.marvin.chat.Form', {
             region: 'center',
             hideLabel: true
         }, {
+            xtype: 'gosModuleMarvinChatFormFilePanel',
+            name: 'prompt',
+            region: 'south',
+            header: false,
+            flex: 0,
+            autoHeight: true
+        }, {
             xtype: 'gosModuleMarvinAiModelGrid',
             name: 'prompt',
             region: 'west',
-            hideLabel: true,
             flex: 0,
             collapsible: true,
             split: true,
@@ -36,31 +42,83 @@ Ext.define('GibsonOS.module.marvin.chat.Form', {
             handler() {
                 me.setLoading(true);
 
+                const fileViewStore = me.down('gosModuleMarvinChatFormFileView').getStore();
                 const selectedModels = [];
+                const xhr = new XMLHttpRequest();
+                const formData = new FormData();
+                const formValues = me.getForm().getValues();
+
+                formData.append('chatId', formValues.chatId);
+                formData.append('prompt', formValues.prompt);
 
                 Ext.iterate(me.down('gosModuleMarvinAiModelGrid').getSelectionModel().getSelection(), (record) => {
                     selectedModels.push({modelId: record.getId()});
                 });
 
-                me.submit({
-                    xtype: 'gosFormActionAction',
-                    url: baseDir + 'marvin/chat/prompt',
-                    method: 'POST',
-                    params: {
-                        models: Ext.encode(selectedModels)
-                    },
-                    success(form, action) {
-                        me.getForm().findField('chatId').setValue(Ext.decode(action.response.responseText).data.id);
-                        me.getForm().findField('prompt').setValue('');
-                        me.setLoading(false);
-                    },
-                    failure() {
-                        me.setLoading(false);
-                    }
+                formData.append('models', Ext.encode(selectedModels));
+
+                fileViewStore.each((file) => {
+                    formData.append('files[]', file.get('file'));
                 });
+
+                xhr.open('POST', baseDir + 'marvin/chat/prompt');
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                xhr.upload.onprogress = (uploadEvent) => {
+                    console.log(uploadEvent);
+                    console.log(files[i]);
+                };
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState !== 4) {
+                        return false;
+                    }
+
+                    const response = Ext.decode(xhr.responseText);
+
+                    if (response.failure) {
+                        let data = response.data;
+
+                        if (!data) {
+                            data = {msg: response.msg ?? 'Datei konnte nicht hochgeladen werden!'}
+                        }
+
+                        GibsonOS.MessageBox.show(data);
+                    }
+
+                    me.setLoading(false);
+                };
+
+                xhr.send(formData);
             }
         }];
 
         me.callParent();
+
+        me.on('afterrender', () => {
+            me.setUploadField();
+        });
+    },
+    setUploadField() {
+        const me = this;
+        const element = me.getEl().dom;
+
+        const stopEvents = (event) => {
+            event.stopPropagation();
+            event.preventDefault();
+        };
+        element.ondragover = stopEvents;
+        element.ondrageleave = stopEvents;
+        element.ondrop = (event) => {
+            stopEvents(event);
+
+            const fileViewStore = me.down('gosModuleMarvinChatFormFileView').getStore()
+
+            Ext.iterate(event.dataTransfer.files, (file) => {
+                fileViewStore.add({
+                    name: file.name,
+                    file: file,
+                });
+            });
+            //me.updateAttachedFilesList();
+        };
     }
 });
