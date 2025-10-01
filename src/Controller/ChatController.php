@@ -126,6 +126,10 @@ class ChatController extends AbstractController
         #[GetModel]
         Image $image,
     ): FileResponse {
-        return new FileResponse($this->requestService, $image->getPath());
+        $filePath = $image->getPath();
+
+        return (new FileResponse($this->requestService, $filePath))
+            ->setType(mime_content_type($filePath))
+        ;
     }
 }

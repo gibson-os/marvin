@@ -43,7 +43,7 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
             '<div class="marvinChatMessageImages">',
             '<tpl for="images">',
             '<span class="marvinChatFile">',
-            '<a href="' + baseDir + 'marvin/chat/image/id/{id}" target="_blank">{name}</a>',
+            '<a href="' + baseDir + 'marvin/chat/image/id/{id}/{name}" target="_blank">{name}</a>',
             '</span>',
             '</tpl>',
             '</div>',
