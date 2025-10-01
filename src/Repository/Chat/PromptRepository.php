@@ -51,6 +51,7 @@ class PromptRepository extends AbstractRepository
                 new ChildrenMapping('responses', 'r_', 'r', [
                     new ChildrenMapping('model', 'm_', 'm'),
                 ]),
+                new ChildrenMapping('images', 'i_', 'i'),
             ],
         );
     }

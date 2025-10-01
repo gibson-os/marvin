@@ -12,6 +12,7 @@ use GibsonOS\Core\Service\WebService;
 use GibsonOS\Core\Utility\JsonUtility;
 use GibsonOS\Module\Marvin\Enum\Role;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt;
+use GibsonOS\Module\Marvin\Model\Chat\Prompt\Image;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt\Response;
 use GibsonOS\Module\Marvin\Model\Model;
 
@@ -70,6 +71,10 @@ class ChatClient
             $messages[] = [
                 'role' => $oldPrompt->getRole()->value,
                 'content' => $oldPrompt->getPrompt(),
+                'images' => array_map(
+                    static fn (Image $image): string => base64_encode($image->getPath()),
+                    $oldPrompt->getImages(),
+                ),
             ];
 
             if ($oldPrompt->getId() === $prompt->getId()) {
