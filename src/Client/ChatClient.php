@@ -72,7 +72,7 @@ class ChatClient
                 'role' => $oldPrompt->getRole()->value,
                 'content' => $oldPrompt->getPrompt(),
                 'images' => array_map(
-                    static fn (Image $image): string => base64_encode($image->getPath()),
+                    static fn (Image $image): string => base64_encode(file_get_contents($image->getPath())),
                     $oldPrompt->getImages(),
                 ),
             ];

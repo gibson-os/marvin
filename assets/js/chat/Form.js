@@ -63,10 +63,10 @@ Ext.define('GibsonOS.module.marvin.chat.Form', {
 
                 xhr.open('POST', baseDir + 'marvin/chat/prompt');
                 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-                xhr.upload.onprogress = (uploadEvent) => {
-                    console.log(uploadEvent);
-                    console.log(files[i]);
-                };
+                // xhr.upload.onprogress = (uploadEvent) => {
+                //     console.log(uploadEvent);
+                //     console.log(files[i]);
+                // };
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState !== 4) {
                         return false;
