@@ -39,6 +39,11 @@
     background: #CCF;
 }
 
+.marvinChatFile a {
+    color: inherit;
+    text-decoration: none;
+}
+
 .marvinChatSendMessageContainer .marvinChatMessageArrow {
     width: 20px;
     height: 15px;

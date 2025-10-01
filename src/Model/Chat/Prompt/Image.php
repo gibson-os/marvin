@@ -20,6 +20,9 @@ class Image extends AbstractModel implements JsonSerializable
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED], autoIncrement: true)]
     private ?int $id = null;
 
+    #[Column(length: 64)]
+    private string $name;
+
     #[Column(length: 256)]
     private string $path;
 
@@ -53,6 +56,18 @@ class Image extends AbstractModel implements JsonSerializable
         return $this;
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): Image
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
     public function getPromptId(): int
     {
         return $this->promptId;
@@ -67,6 +82,9 @@ class Image extends AbstractModel implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return [];
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+        ];
     }
 }

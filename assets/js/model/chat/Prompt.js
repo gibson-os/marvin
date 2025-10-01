@@ -12,5 +12,8 @@ Ext.define('GibsonOS.module.marvin.model.chat.Prompt', {
     }, {
         name: 'responses',
         type: 'array'
+    }, {
+        name: 'images',
+        type: 'array'
     }]
 });

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Marvin\Controller;
 
+use DateMalformedStringException;
 use DateTimeImmutable;
 use Exception;
 use GibsonOS\Core\Attribute\CheckPermission;
@@ -17,6 +18,7 @@ use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
+use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Marvin\Model\Chat;
 use GibsonOS\Module\Marvin\Model\Chat\Model;
@@ -64,6 +66,7 @@ class ChatController extends AbstractController
      * @throws RecordException
      * @throws ReflectionException
      * @throws ClientException
+     * @throws DateMalformedStringException
      */
     #[CheckPermission([Permission::WRITE])]
     public function postPrompt(
@@ -98,7 +101,11 @@ class ChatController extends AbstractController
 
             foreach ($files as $file) {
                 $filename = sprintf('%s%s', $filePath->getValue(), uniqid());
-                $prompt->addImages([(new Image($modelWrapper))->setPath($filename)]);
+                $prompt->addImages([
+                    (new Image($modelWrapper))
+                        ->setName($file['name'])
+                        ->setPath($filename),
+                ]);
                 $fileService->move($file['tmp_name'], $filename);
             }
 
@@ -112,5 +119,13 @@ class ChatController extends AbstractController
         }
 
         return $this->returnSuccess($chat);
+    }
+
+    #[CheckPermission([Permission::READ])]
+    public function getImage(
+        #[GetModel]
+        Image $image,
+    ): FileResponse {
+        return new FileResponse($this->requestService, $image->getPath());
     }
 }

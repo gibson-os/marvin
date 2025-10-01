@@ -20,7 +20,7 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
 
         me.getStore().on('load', (store, records) => {
             me.deactivateAutoReload();
-            
+
             Ext.iterate(records, (record) => {
                 Ext.iterate(record.get('responses'), (response) => {
                     if (response.done !== null) {
@@ -40,6 +40,13 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
             '<div class="marvinChatMessageArrow"></div>',
             '<div class="marvinChatMessage">',
             '<p>{prompt}</p>',
+            '<div class="marvinChatMessageImages">',
+            '<tpl for="images">',
+            '<span class="marvinChatFile">',
+            '<a href="' + baseDir + 'marvin/chat/image/id/{id}" target="_blank">{name}</a>',
+            '</span>',
+            '</tpl>',
+            '</div>',
             '<div class="marvinChatMessageStatus">{createdAt}</div>',
             '</div>',
             '</div>',
