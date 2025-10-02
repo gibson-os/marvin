@@ -49,4 +49,9 @@ class ModelRepository extends AbstractRepository
     {
         return $this->fetchAll('', [], Model::class);
     }
+
+    public function getActive(): array
+    {
+        return $this->fetchAll('`active`=:active', ['active' => 1], Model::class);
+    }
 }
