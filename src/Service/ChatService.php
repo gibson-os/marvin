@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Marvin\Service;
 
+use GibsonOS\Core\Exception\Model\SaveError;
+use GibsonOS\Core\Exception\ViolationException;
 use GibsonOS\Core\Exception\WebException;
 use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Marvin\Client\ChatClient;
@@ -11,7 +13,13 @@ use GibsonOS\Module\Marvin\Exception\ChatException;
 use GibsonOS\Module\Marvin\Model\Chat;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt;
 use GibsonOS\Module\Marvin\Model\Chat\Prompt\Response;
+use GibsonOS\Module\Marvin\Model\Model;
+use GibsonOS\Module\Marvin\Repository\Chat\Prompt\ResponseRepository;
 use GibsonOS\Module\Marvin\Repository\Chat\PromptRepository;
+use JsonException;
+use MDO\Exception\ClientException;
+use MDO\Exception\RecordException;
+use ReflectionException;
 
 class ChatService
 {
@@ -20,6 +28,7 @@ class ChatService
         private readonly ModelService $modelService,
         private readonly ChatClient $chatClient,
         private readonly PromptRepository $promptRepository,
+        private readonly ResponseRepository $responseRepository,
     ) {
     }
 
@@ -39,6 +48,14 @@ class ChatService
         return $prompt;
     }
 
+    /**
+     * @throws SaveError
+     * @throws ViolationException
+     * @throws JsonException
+     * @throws ClientException
+     * @throws RecordException
+     * @throws ReflectionException
+     */
     public function addMissingPrompts(Chat $chat): void
     {
         foreach ($chat->getModels() as $chatModel) {
@@ -52,6 +69,19 @@ class ChatService
                 $this->modelWrapper->getModelManager()->saveWithoutChildren($response);
             }
         }
+    }
+
+    public function resetNewerResponses(Prompt $prompt, Model $model): self
+    {
+        foreach ($this->responseRepository->getAfter($prompt, $model) as $response) {
+            $response
+                ->setStartedAt(null)
+                ->setDoneAt(null)
+            ;
+            $this->modelWrapper->getModelManager()->saveWithoutChildren($response);
+        }
+
+        return $this;
     }
 
     /**
