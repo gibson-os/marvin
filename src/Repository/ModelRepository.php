@@ -45,11 +45,27 @@ class ModelRepository extends AbstractRepository
         );
     }
 
+    /**
+     * @throws ClientException
+     * @throws JsonException
+     * @throws RecordException
+     * @throws ReflectionException
+     *
+     * @return Model[]
+     */
     public function getAll(): array
     {
-        return $this->fetchAll('', [], Model::class);
+        return $this->fetchAll('1', [], Model::class);
     }
 
+    /**
+     * @throws ClientException
+     * @throws JsonException
+     * @throws RecordException
+     * @throws ReflectionException
+     *
+     * @return Model[]
+     */
     public function getActive(): array
     {
         return $this->fetchAll('`active`=:active', ['active' => 1], Model::class);
