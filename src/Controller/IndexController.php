@@ -25,9 +25,11 @@ class IndexController extends AbstractController
         #[GetStore]
         ChatStore $chatStore,
     ): AjaxResponse {
-        $chatStore->setUser($permissionUser);
-
-        return $chatStore->getAjaxResponse();
+        return $chatStore
+            ->setUser($permissionUser)
+            ->setLimit(0, 0)
+            ->getAjaxResponse()
+        ;
     }
 
     #[CheckPermission([Permission::READ])]
@@ -35,7 +37,10 @@ class IndexController extends AbstractController
         #[GetStore]
         ModelStore $modelStore,
     ): AjaxResponse {
-        return $modelStore->getAjaxResponse();
+        return $modelStore
+            ->setLimit(0, 0)
+            ->getAjaxResponse()
+        ;
     }
 
     #[CheckPermission([Permission::WRITE, Permission::MANAGE])]

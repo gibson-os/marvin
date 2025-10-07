@@ -13,7 +13,13 @@ use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Attribute\GetStore;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Enum\Permission;
+use GibsonOS\Core\Exception\CreateError;
+use GibsonOS\Core\Exception\DeleteError;
+use GibsonOS\Core\Exception\FileNotFound;
+use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Model\SaveError;
+use GibsonOS\Core\Exception\SetError;
+use GibsonOS\Core\Exception\ViolationException;
 use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User;
 use GibsonOS\Core\Service\FileService;
@@ -55,18 +61,26 @@ class ChatController extends AbstractController
         #[GetStore]
         PromptStore $promptStore,
     ): AjaxResponse {
-        $promptStore->setChat($chat);
-
-        return $promptStore->getAjaxResponse();
+        return $promptStore
+            ->setChat($chat)
+            ->setLimit(0, 0)
+            ->getAjaxResponse()
+        ;
     }
 
     /**
-     * @throws SaveError
+     * @throws ClientException
+     * @throws DateMalformedStringException
      * @throws JsonException
      * @throws RecordException
      * @throws ReflectionException
-     * @throws ClientException
-     * @throws DateMalformedStringException
+     * @throws SaveError
+     * @throws CreateError
+     * @throws DeleteError
+     * @throws FileNotFound
+     * @throws GetError
+     * @throws SetError
+     * @throws ViolationException
      */
     #[CheckPermission([Permission::WRITE])]
     public function postPrompt(
