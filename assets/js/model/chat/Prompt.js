@@ -10,6 +10,9 @@ Ext.define('GibsonOS.module.marvin.model.chat.Prompt', {
         name: 'createdAt',
         type: 'string'
     }, {
+        name: 'role',
+        type: 'string'
+    }, {
         name: 'responses',
         type: 'array'
     }, {

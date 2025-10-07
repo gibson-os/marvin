@@ -127,6 +127,7 @@ class Prompt extends AbstractModel implements JsonSerializable
             'responses' => $this->getResponses(),
             'images' => $this->getImages(),
             'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
+            'role' => $this->getRole()->name,
         ];
     }
 }

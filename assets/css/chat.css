@@ -58,6 +58,10 @@
     float: left;
 }
 
+.marvinChatSystemMessageContainer .marvinChatMessage {
+    border-radius: 5px;
+}
+
 .marvinChatSendMessageContainer .marvinChatMessage {
     border-radius: 5px 0 5px 5px;
 }
@@ -116,6 +120,11 @@
 
 .marvinChatAiMessageSpacer {
     overflow-x: auto;
+}
+
+.marvinChatSystemMessageContainer .marvinChatMessage {
+    background: #DDD;
+    margin: 8px 20px;
 }
 
 .marvinChatSendMessageContainer .marvinChatMessage {

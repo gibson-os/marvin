@@ -5,6 +5,7 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
     loadMask: false,
     chatId: null,
     autoReload: true,
+    savedScrollTop: null,
     initComponent() {
         let me = this;
 
@@ -16,6 +17,11 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
 
         me.on('refresh', () => {
             me.setClickEvents();
+            me.restoreScrollPosition();
+        });
+
+        me.getStore().on('beforeload', () => {
+            me.saveScrollPosition();
         });
 
         me.getStore().on('load', (store, records) => {
@@ -36,8 +42,12 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
 
         me.tpl = new Ext.XTemplate(
             '<tpl for=".">',
+            '<tpl if="role == \'USER\'">',
             '<div class="marvinChatSendMessageContainer">',
             '<div class="marvinChatMessageArrow"></div>',
+            '<tpl else>',
+            '<div class="marvinChatSystemMessageContainer">',
+            '</tpl>',
             '<div class="marvinChatMessage">',
             '<p>{prompt}</p>',
             '<div class="marvinChatMessageImages">',
@@ -50,9 +60,9 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
             '<div class="marvinChatMessageStatus">{createdAt}</div>',
             '</div>',
             '</div>',
+            '<tpl if="responses.length &gt; 0">',
             '<div class="marvinChatReceivedMessageContainer">',
-            '<div class="marvinChatMessageArrow">',
-            '</div>',
+            '<div class="marvinChatMessageArrow"></div>',
             '<div class="marvinChatMessage marvinChatAiMessageContainer">',
             '<tpl for="responses">',
             '<div class="marvinChatAiMessage">',
@@ -77,6 +87,7 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
             '</tpl>',
             '</div>',
             '</div>',
+            '</tpl>',
             '</tpl>'
         );
     },
@@ -122,5 +133,21 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
                 }
             });
         });
+    },
+    saveScrollPosition() {
+        const me = this;
+        const el = me.getEl();
+
+        if (el && el.dom) {
+            me.savedScrollTop = el.dom.scrollTop;
+        }
+    },
+    restoreScrollPosition() {
+        const me = this;
+        const el = me.getEl();
+
+        if (el && el.dom && me.savedScrollTop !== null) {
+            el.dom.scrollTop = me.savedScrollTop;
+        }
     }
 });

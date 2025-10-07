@@ -34,7 +34,7 @@ Ext.define('GibsonOS.module.marvin.chat.Panel', {
     setChatId(chatId) {
         const me = this;
         const modelGrid = me.down('gosModuleMarvinAiModelGrid');
-        const modelGridStore = me.down('gosModuleMarvinAiModelGrid').getStore();
+        const modelGridStore = modelGrid.getStore();
         const modelGridSelectionModel = modelGrid.getSelectionModel();
         const chatView = me.down('gosModuleMarvinChatView');
         const chatViewStore = chatView.getStore();
@@ -80,11 +80,16 @@ Ext.define('GibsonOS.module.marvin.chat.Panel', {
                 },
                 success(response) {
                     const data = Ext.decode(response.responseText).data;
-                    const selectedModels = [];
 
                     waitLoading(modelGridStore, () => {
+                        const selectedModels = [];
+
                         data.models.forEach((model) => {
-                            selectedModels.push(modelGridStore.getById(model.id));
+                            const storeModel = modelGridStore.getById(model.id);
+
+                            if (storeModel !== null) {
+                                selectedModels.push(storeModel);
+                            }
                         });
 
                         modelGridSelectionModel.select(selectedModels);
