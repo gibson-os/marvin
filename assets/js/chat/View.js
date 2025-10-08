@@ -26,10 +26,6 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
         });
 
         me.getStore().on('load', (store, records) => {
-            if (me.isVisible() === false) {
-                return;
-            }
-
             me.deactivateAutoReload();
 
             Ext.iterate(records, (record) => {
