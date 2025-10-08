@@ -92,7 +92,17 @@ Ext.define('GibsonOS.module.marvin.chat.Panel', {
                             }
                         });
 
-                        modelGridSelectionModel.select(selectedModels);
+                        const selectModels = () => {
+                            if (!modelGrid.rendered) {
+                                Ext.defer(selectModels, 50);
+                                
+                                return;
+                            }
+
+                            modelGridSelectionModel.select(selectedModels);
+                        };
+
+                        selectModels();
                     });
                 },
                 callback() {
