@@ -46,7 +46,7 @@ class PromptRepository extends AbstractRepository
             '`r`.`started_at` IS NULL',
             [],
             Prompt::class,
-            orderBy: ['`t`.`created_at`' => OrderDirection::ASC],
+            orderBy: ['`t`.`created_at`' => OrderDirection::ASC, '`t`.`id`' => OrderDirection::ASC],
             children: [
                 new ChildrenMapping('responses', 'r_', 'r', [
                     new ChildrenMapping('model', 'm_', 'm'),

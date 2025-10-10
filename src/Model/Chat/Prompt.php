@@ -8,6 +8,7 @@ use GibsonOS\Core\Attribute\Install\Database\Column;
 use GibsonOS\Core\Attribute\Install\Database\Constraint;
 use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
+use GibsonOS\Core\Service\ParsedownService;
 use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Marvin\Enum\Role;
 use GibsonOS\Module\Marvin\Model\Chat;
@@ -121,9 +122,11 @@ class Prompt extends AbstractModel implements JsonSerializable
 
     public function jsonSerialize(): array
     {
+        $parsedown = new ParsedownService();
+
         return [
             'id' => $this->getId(),
-            'prompt' => $this->getPrompt(),
+            'prompt' => $parsedown->parse($this->getPrompt()),
             'responses' => $this->getResponses(),
             'images' => $this->getImages(),
             'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),

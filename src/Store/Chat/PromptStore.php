@@ -42,6 +42,7 @@ class PromptStore extends AbstractDatabaseStore
     {
         return [
             '`p`.`created_at`' => OrderDirection::ASC,
+            '`p`.`id`' => OrderDirection::ASC,
             '`m`.`name`' => OrderDirection::ASC,
         ];
     }
