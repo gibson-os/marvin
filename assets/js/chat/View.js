@@ -126,11 +126,9 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
 
         Ext.iterate(prompt.images, (image) => {
             html +=
-                '<div class="marvinChatFile">' +
                 '<span class="marvinChatFile">' +
                 '<a href="' + baseDir + 'marvin/chat/image/id/' + image.id + '/' + image.name + '" target="_blank">' + image.name + '</a>' +
-                '</span>' +
-                '</div>'
+                '</span>'
             ;
         });
 
