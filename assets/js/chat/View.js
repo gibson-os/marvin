@@ -44,52 +44,18 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
         me.tpl = new Ext.XTemplate(
             '<tpl for=".">',
             '<tpl if="role == \'USER\'">',
-            '<div class="marvinChatSendMessageContainer">',
-            '<div class="marvinChatMessageArrow"></div>',
+            '{[this.renderUserPrompt(values)]}',
             '<tpl else>',
-            '<div class="marvinChatSystemMessageContainer">',
+            '{[this.renderSystemPrompt(values)]}',
             '</tpl>',
-            '<div class="marvinChatMessage">',
-            '<p>{prompt}</p>',
-            '<div class="marvinChatMessageImages">',
-            '<tpl for="images">',
-            '<span class="marvinChatFile">',
-            '<a href="' + baseDir + 'marvin/chat/image/id/{id}/{name}" target="_blank">{name}</a>',
-            '</span>',
+            '{[this.renderResponses(values.responses)]}',
             '</tpl>',
-            '</div>',
-            '<div class="marvinChatMessageStatus">{createdAt}</div>',
-            '</div>',
-            '</div>',
-            '<tpl if="responses.length &gt; 0">',
-            '<div class="marvinChatReceivedMessageContainer">',
-            '<div class="marvinChatMessageArrow"></div>',
-            '<div class="marvinChatMessage marvinChatAiMessageContainer">',
-            '<tpl for="responses">',
-            '<div class="marvinChatAiMessage">',
-            '<tpl if="done == null">',
-            '<div class="marvinChatAiMessageLoading"></div>',
-            '<tpl else>',
-            '<div class="marvinChatAiMessageMinimize"></div>',
-            '<div class="marvinChatAiMessageMaximize"></div>',
-            '</tpl>',
-            '<h3 class="marvinChatAiMessageModel">{model.name}</h3>',
-            '<div class="marvinChatAiMessageSpacer">',
-            '{message}',
-            '</div>',
-            '<div class="marvinChatMessageStatus">',
-            '<tpl if="done == null">',
-            '{started}',
-            '<tpl else>',
-            '{done}',
-            '</tpl>',
-            '</div>',
-            '</div>',
-            '</tpl>',
-            '</div>',
-            '</div>',
-            '</tpl>',
-            '</tpl>'
+            {
+                renderSystemPrompt: me.renderSystemPrompt,
+                renderUserPrompt: me.renderUserPrompt,
+                renderPrompt: me.renderPrompt,
+                renderResponses: me.renderResponses,
+            }
         );
     },
     setClickEvents() {
@@ -150,5 +116,89 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
         if (el && el.dom && me.savedScrollTop !== null) {
             el.dom.scrollTop = me.savedScrollTop;
         }
+    },
+    renderPrompt(prompt) {
+        let html =
+            '<div class="marvinChatMessage">' +
+            '<p>' + prompt.prompt + '</p>' +
+            '<div class="marvinChatMessageImages">'
+        ;
+
+        Ext.iterate(prompt.images, (image) => {
+            html +=
+                '<div class="marvinChatFile">' +
+                '<span class="marvinChatFile">' +
+                '<a href="' + baseDir + 'marvin/chat/image/id/' + image.id + '/' + image.name + '" target="_blank">' + image.name + '</a>' +
+                '</span>' +
+                '</div>'
+            ;
+        });
+
+        return html + '<div class="marvinChatMessageStatus">' + prompt.createdAt + '</div></div></div>';
+    },
+    renderSystemPrompt(prompt) {
+        return '<div class="marvinChatSystemMessageContainer">' + this.renderPrompt(prompt) + '</div>';
+    },
+    renderUserPrompt(prompt) {
+        console.log(prompt);
+        console.log(this);
+        return '<div class="marvinChatSendMessageContainer"><div class="marvinChatMessageArrow"></div>' + this.renderPrompt(prompt) + '</div>';
+    },
+    renderResponses(responses) {
+        if (responses.length === 0) {
+            return '';
+        }
+
+        let html =
+            '<div class="marvinChatReceivedMessageContainer">' +
+            '<div class="marvinChatMessageArrow"></div>' +
+            '<div class="marvinChatMessage marvinChatAiMessageContainer">'
+        ;
+
+        Ext.iterate(responses, (response) => {
+            html += '<div class="marvinChatAiMessage">';
+
+            if (response.done === null) {
+                html += '<div class="marvinChatAiMessageLoading"></div>';
+            } else {
+                html += '<div class="marvinChatAiMessageMinimize"></div>';
+                html += '<div class="marvinChatAiMessageMaximize"></div>';
+            }
+
+            html +=
+                '<h3 class="marvinChatAiMessageModel">' + response.model.name + '</h3>' +
+                '<div class="marvinChatAiMessageSpacer">' + response.message + '</div>' +
+                '<div class="marvinChatMessageStatus">'
+            ;
+
+            const runtimeDividers = [60, 60, 24];
+            const runtimeUnits = ['s', 'm', 'h'];
+            const calcRuntime = (runtime) => {
+                for (let i = 0; i < runtimeDividers.length; i++) {
+                    if (runtime < runtimeDividers[i]) {
+                        return Math.floor(runtime) + runtimeUnits[i];
+                    }
+
+                    runtime = runtime / runtimeDividers[i];
+                }
+            }
+
+            if (response.runtime !== null) {
+                html +=
+                    '<div class="marvinChatAiMessageRuntime"></div> ' +
+                    '<span title="' + response.runtime + 's nachgedacht">' + calcRuntime(response.runtime) + '</span> | '
+                ;
+            }
+
+            if (response.done !== null) {
+                html += response.done;
+            } else if (response.started !== null) {
+                html += response.started;
+            }
+
+            html += '</div></div>';
+        });
+
+        return html + '</div></div>';
     }
 });

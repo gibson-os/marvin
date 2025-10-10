@@ -121,13 +121,21 @@ class Response extends AbstractModel implements JsonSerializable
     public function jsonSerialize(): array
     {
         $parsedown = new ParsedownService();
+        $startedAt = $this->getStartedAt();
+        $doneAt = $this->getDoneAt();
+        $runtime = null;
+
+        if ($startedAt !== null) {
+            $runtime = ($doneAt ?? new DateTime())->getTimestamp() - $startedAt->getTimestamp();
+        }
 
         return [
             'id' => $this->getId(),
             'message' => $parsedown->parse($this->getMessage()),
             'model' => $this->getModel(),
-            'started' => $this->getStartedAt()?->format('Y-m-d H:i:s'),
-            'done' => $this->getDoneAt()?->format('Y-m-d H:i:s'),
+            'started' => $startedAt?->format('Y-m-d H:i:s'),
+            'done' => $doneAt?->format('Y-m-d H:i:s'),
+            'runtime' => $runtime,
         ];
     }
 }
