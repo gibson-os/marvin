@@ -106,6 +106,7 @@
     text-align: right;
     margin: 0 0 .5em;
     color: #AAA;
+    cursor: default;
 }
 
 .marvinChatAiMessage .marvinChatMessageStatus {

@@ -183,8 +183,9 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
 
             if (response.runtime !== null) {
                 html +=
-                    '<div class="marvinChatAiMessageRuntime"></div> ' +
-                    '<span title="' + response.runtime + 's nachgedacht">' + calcRuntime(response.runtime) + '</span> | '
+                    '<span title="' + response.runtime + 's nachgedacht">' +
+                    '<div class="marvinChatAiMessageRuntime"></div> ' + calcRuntime(response.runtime) +
+                    '</span> | '
                 ;
             }
 
