@@ -1,6 +1,12 @@
 GibsonOS.define('GibsonOS.module.marvin.chat.Response', {
-    renderResponsesButton(responses, width = 800) {
-        if (responses.length === 0) {
+    renderResponsesButton(prompt, width = 800) {
+        if (!prompt) {
+            return '';
+        }
+
+        const responses = prompt.responses;
+        
+        if (!responses || responses.length === 0) {
             return '';
         }
 
@@ -18,7 +24,7 @@ GibsonOS.define('GibsonOS.module.marvin.chat.Response', {
         marvinPopup.style.display = 'block';
     },
     renderResponses(responses) {
-        if (responses.length === 0) {
+        if (!responses || responses.length === 0) {
             return '';
         }
 
