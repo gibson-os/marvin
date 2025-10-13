@@ -17,7 +17,7 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
         me.callParent();
 
         me.on('refresh', () => {
-            me.setClickEvents();
+            GibsonOS.module.marvin.chat.Response.setClickEvents();
             me.restoreScrollPosition();
         });
 
@@ -57,49 +57,6 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
                 renderResponses: GibsonOS.module.marvin.chat.Response.renderResponses,
             }
         );
-    },
-    setClickEvents() {
-        const me = this;
-        const receivedMessages = document.querySelectorAll('#' + me.getId() + ' .marvinChatReceivedMessageContainer .marvinChatMessage');
-
-        Ext.iterate(receivedMessages, (message) => {
-            const aiMessages = message.querySelectorAll('.marvinChatAiMessage');
-
-            Ext.iterate(aiMessages, (aiMessage) => {
-                const minimizeButton = aiMessage.querySelector('.marvinChatAiMessageMinimize');
-                const maximizeButton = aiMessage.querySelector('.marvinChatAiMessageMaximize');
-
-                if (minimizeButton === null || maximizeButton === null) {
-                    return;
-                }
-
-                minimizeButton.onclick = () => {
-                    minimizeButton.style.display = 'none';
-                    maximizeButton.style.display = 'block';
-
-                    if (aiMessage !== message.querySelector('.marvinChatAiMessage:last-child')) {
-                        aiMessage.style.borderRight = '1px solid #AAA';
-                    }
-
-                    Ext.iterate(message.querySelectorAll('.marvinChatAiMessage'), (otherAiMessage) => {
-                        otherAiMessage.style.display = 'block';
-                    });
-                }
-                maximizeButton.onclick = () => {
-                    maximizeButton.style.display = 'none';
-                    minimizeButton.style.display = 'block';
-                    aiMessage.style.borderRight = '0 none';
-
-                    Ext.iterate(message.querySelectorAll('.marvinChatAiMessage'), (otherAiMessage) => {
-                        if (otherAiMessage === aiMessage) {
-                            return true;
-                        }
-
-                        otherAiMessage.style.display = 'none';
-                    });
-                }
-            });
-        });
     },
     saveScrollPosition() {
         const me = this;
