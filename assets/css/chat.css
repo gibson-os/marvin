@@ -180,4 +180,6 @@
     cursor: default;
     display: none;
     font-weight: normal;
+    z-index: 999999;
+    text-align: initial;
 }
