@@ -46,9 +46,19 @@ GibsonOS.define('GibsonOS.module.marvin.chat.Response', {
                 html += '<div class="marvinChatAiMessageMaximize"></div>';
             }
 
+            let message = response.message;
+
+            if (
+                message.indexOf('&lt;think&gt;') !== -1 &&
+                message.indexOf('&lt;/think&gt;') !== -1
+            ) {
+                message = message.replace('&lt;think&gt;', '<div class="marvinChatAiMessageThink"><h3>Thinking</h3>');
+                message = message.replace('&lt;/think&gt;', '</div>');
+            }
+
             html +=
                 '<h3 class="marvinChatAiMessageModel">' + response.model.name + '</h3>' +
-                '<div class="marvinChatAiMessageSpacer">' + response.message + '</div>' +
+                '<div class="marvinChatAiMessageSpacer">' + message + '</div>' +
                 '<div class="marvinChatMessageStatus">'
             ;
 
@@ -92,6 +102,17 @@ GibsonOS.define('GibsonOS.module.marvin.chat.Response', {
             Ext.iterate(aiMessages, (aiMessage) => {
                 const minimizeButton = aiMessage.querySelector('.marvinChatAiMessageMinimize');
                 const maximizeButton = aiMessage.querySelector('.marvinChatAiMessageMaximize');
+                const thinkingBlock = aiMessage.querySelector('.marvinChatAiMessageThink');
+
+                if (thinkingBlock !== null) {
+                    thinkingBlock.onclick = () => {
+                        if (thinkingBlock.style.height === 'auto') {
+                            thinkingBlock.style.height = '2em';
+                        } else {
+                            thinkingBlock.style.height = 'auto';
+                        }
+                    }
+                }
 
                 if (minimizeButton === null || maximizeButton === null) {
                     return;

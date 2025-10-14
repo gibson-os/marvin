@@ -186,3 +186,20 @@
     z-index: 999999;
     text-align: initial;
 }
+
+.marvinChatAiMessageThink {
+    padding: .5em;
+    background: #DDD;
+    border-radius: .5em;
+    height: 2em;
+    overflow: hidden;
+    cursor: pointer;
+    margin-bottom: .5em;
+}
+
+.marvinChatAiMessageThink h3 {
+    font-size: 1em;
+    margin: 0 0 .5em 0;
+    padding: 0;
+    line-height: 1em;
+}
