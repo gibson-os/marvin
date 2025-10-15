@@ -43,7 +43,7 @@ class PromptRepository extends AbstractRepository
     public function getWithoutResponse(): array
     {
         return $this->fetchAll(
-            '`r`.`started_at` IS NULL',
+            '`r`.`done_at` IS NULL',
             [],
             Prompt::class,
             orderBy: ['`t`.`created_at`' => OrderDirection::ASC, '`t`.`id`' => OrderDirection::ASC],
