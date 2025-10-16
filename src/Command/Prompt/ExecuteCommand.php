@@ -7,6 +7,7 @@ use GibsonOS\Core\Attribute\Command\Lock;
 use GibsonOS\Core\Attribute\Install\Cronjob;
 use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\Model\SaveError;
+use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\ViolationException;
 use GibsonOS\Core\Exception\WebException;
 use GibsonOS\Core\Service\DateTimeService;
@@ -44,20 +45,21 @@ class ExecuteCommand extends AbstractCommand
      * @throws ClientException
      * @throws RecordException
      * @throws ReflectionException
+     * @throws SelectError
      */
     protected function run(): int
     {
-        foreach ($this->promptRepository->getWithoutResponse() as $prompt) {
-            foreach ($prompt->getResponses() as $response) {
-                $response->setStartedAt($this->dateTimeService->get());
-                $this->modelWrapper->getModelManager()->saveWithoutChildren($response);
-                $apiResponse = $this->chatClient->postChatPrompt($response->getModel(), $prompt);
-                $response
-                    ->setMessage($apiResponse['message']['content'])
-                    ->setDoneAt($this->dateTimeService->get())
-                ;
-                $this->modelWrapper->getModelManager()->saveWithoutChildren($response);
-            }
+        $prompt = $this->promptRepository->getWithoutResponse();
+
+        foreach ($prompt->getResponses() as $response) {
+            $response->setStartedAt($this->dateTimeService->get());
+            $this->modelWrapper->getModelManager()->saveWithoutChildren($response);
+            $apiResponse = $this->chatClient->postChatPrompt($response->getModel(), $prompt);
+            $response
+                ->setMessage($apiResponse['message']['content'])
+                ->setDoneAt($this->dateTimeService->get())
+            ;
+            $this->modelWrapper->getModelManager()->saveWithoutChildren($response);
         }
 
         return self::SUCCESS;

@@ -5,6 +5,7 @@ namespace GibsonOS\Module\Marvin\Repository\Chat;
 
 use GibsonOS\Core\Attribute\GetTableName;
 use GibsonOS\Core\Dto\Model\ChildrenMapping;
+use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Repository\AbstractRepository;
 use GibsonOS\Core\Wrapper\RepositoryWrapper;
 use GibsonOS\Module\Marvin\Model\Chat;
@@ -37,17 +38,16 @@ class PromptRepository extends AbstractRepository
      * @throws ClientException
      * @throws RecordException
      * @throws ReflectionException
-     *
-     * @return Prompt[]
+     * @throws SelectError
      */
-    public function getWithoutResponse(): array
+    public function getWithoutResponse(): Prompt
     {
-        return $this->fetchAll(
+        return $this->fetchOne(
             '`r`.`done_at` IS NULL',
             [],
             Prompt::class,
-            orderBy: ['`t`.`created_at`' => OrderDirection::ASC, '`t`.`id`' => OrderDirection::ASC],
-            children: [
+            ['`t`.`created_at`' => OrderDirection::ASC, '`t`.`id`' => OrderDirection::ASC],
+            [
                 new ChildrenMapping('responses', 'r_', 'r', [
                     new ChildrenMapping('model', 'm_', 'm'),
                 ]),
