@@ -40,10 +40,10 @@ class PromptRepository extends AbstractRepository
      * @throws ReflectionException
      * @throws SelectError
      */
-    public function getWithoutResponse(): Prompt
+    public function getWithNotDoneResponse(): Prompt
     {
         return $this->fetchOne(
-            '`r`.`done_at` IS NULL',
+            '`r`.`done_at` IS NULL AND `r`.`id` IS NOT NULL',
             [],
             Prompt::class,
             ['`t`.`created_at`' => OrderDirection::ASC, '`t`.`id`' => OrderDirection::ASC],
