@@ -7,6 +7,9 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
     autoReload: true,
     savedScrollTop: null,
     autoReloadDelay: 10000,
+    maximizedMarvinPromptItems: [],
+    maximizedMarvinResponseItems: [],
+    expandedThinkingResponseItems: [],
     initComponent() {
         let me = this;
 
@@ -17,7 +20,7 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
         me.callParent();
 
         me.on('refresh', () => {
-            GibsonOS.module.marvin.chat.Response.setClickEvents();
+            GibsonOS.module.marvin.chat.Response.setClickEvents(me);
             me.restoreScrollPosition();
         });
 
@@ -48,13 +51,15 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
             '<tpl else>',
             '{[this.renderSystemPrompt(values)]}',
             '</tpl>',
-            '{[this.renderResponses(values.responses)]}',
+            '{[this.renderResponses(values)]}',
             '</tpl>',
             {
                 renderSystemPrompt: me.renderSystemPrompt,
                 renderUserPrompt: me.renderUserPrompt,
                 renderPrompt: me.renderPrompt,
-                renderResponses: GibsonOS.module.marvin.chat.Response.renderResponses,
+                renderResponses(prompt) {
+                    return GibsonOS.module.marvin.chat.Response.renderResponses(prompt, me);
+                }
             }
         );
     },
