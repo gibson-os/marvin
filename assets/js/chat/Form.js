@@ -73,10 +73,9 @@ Ext.define('GibsonOS.module.marvin.chat.Form', {
                     }
 
                     const response = Ext.decode(xhr.responseText);
+                    let data = response.data;
 
                     if (response.failure) {
-                        let data = response.data;
-
                         if (!data) {
                             data = {msg: response.msg ?? 'Datei konnte nicht hochgeladen werden!'}
                         }
@@ -85,9 +84,7 @@ Ext.define('GibsonOS.module.marvin.chat.Form', {
                     }
 
                     me.setLoading(false);
-                    me.fireEvent('promptSend', {
-                        responseData: data
-                    });
+                    me.fireEvent('promptSend', data);
                 };
 
                 xhr.send(formData);
