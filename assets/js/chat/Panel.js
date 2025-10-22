@@ -56,6 +56,7 @@ Ext.define('GibsonOS.module.marvin.chat.Panel', {
 
         me.down('gosModuleMarvinChatForm').getForm().findField('chatId').setValue(chatId ?? 0);
         chatView.deactivateAutoReload();
+        chatView.savedScrollTop = null;
         waitLoading(chatViewStore, () => {
             chatViewStore.getProxy().setExtraParam('id', chatId);
             chatViewStore.removeAll();
@@ -95,7 +96,7 @@ Ext.define('GibsonOS.module.marvin.chat.Panel', {
                         const selectModels = () => {
                             if (!modelGrid.rendered) {
                                 Ext.defer(selectModels, 50);
-                                
+
                                 return;
                             }
 

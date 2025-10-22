@@ -75,12 +75,36 @@ Ext.define('GibsonOS.module.marvin.chat.View', {
         const me = this;
         const el = me.getEl();
 
-        if (el && el.dom && me.savedScrollTop !== null) {
+        if (el && el.dom && me.savedScrollTop !== null && me.savedScrollTop !== 0) {
             el.dom.scrollTop = me.savedScrollTop;
+        } else {
+            let notDoneResponseFound = false;
+            let scrollToPromptId = null;
+
+            me.getStore().each((prompt) => {
+                scrollToPromptId = prompt.get('id');
+
+                Ext.iterate(prompt.get('responses'), (response) => {
+                    if (response.done === null) {
+                        notDoneResponseFound = true;
+                        
+                        return false;
+                    }
+                });
+
+                if (notDoneResponseFound) {
+                    return false;
+                }
+            });
+
+            if (scrollToPromptId !== null) {
+                location.href = '#marvinChatMessage' + scrollToPromptId;
+            }
         }
     },
     renderPrompt(prompt) {
         let html =
+            '<a id="marvinChatMessage' + prompt.id + '"></a>' +
             '<div class="marvinChatMessage">' +
             '<p>' + prompt.prompt + '</p>' +
             '<div class="marvinChatMessageImages">'
